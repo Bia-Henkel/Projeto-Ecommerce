@@ -1,12 +1,71 @@
 <?php
 namespace core\classes;
 
+use PDO;
+
 class Database{
 
-    public function __construct()
-    {
-        echo 'Banco de dados!';
+    private $ligacao;
+
+    //=================================================
+    private function ligar(){
+        $this->ligacao = new PDO(
+
+            //ligar o banco de dados
+
+            'mysql:'.
+            'host='.MYSQL_SERVER.';'.
+            'dbname='.MYSQL_DATABASE.';'.
+            'charset='.MYSQL_CHARSET,
+            MYSQL_USER,
+            MYSQL_PASS,
+            array(PDO::ATTR_PERSISTENT => true)
+        );
+
+        // debug
+        $this->ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
     }
 
+    //=================================================
+    private function desligar(){
+        $this->ligacao = null;
+    }
 
+    //=================================================
+    //CRUD
+    //=================================================
+    public function select($sql, $parametros = null) {
+
+        //executa função de pesquisa de SQL
+        $this->ligar();
+
+        $resultados = null;
+
+        try {
+
+            //comunicação com a bd
+            if(!empty($parametros)){
+                $executar = $this->ligacao->prepare($sql);
+                $executar->execute($parametros);
+                $resultados = $executar->fetchAll(\PDO::FETCH_CLASS);
+            } else {
+                $executar = $this->ligacao->prepare($sql);
+                $executar->execute();
+                $resultados = $executar->fetchAll(\PDO::FETCH_CLASS);
+            }
+
+
+        } catch (PDOException $e) {
+
+            // caso exista erro
+            return false;
+
+        }
+
+        //desligar a base de dados
+        $this->desligar();
+
+        //devolver os resultados obtidos
+        return $resultados;
+    }
 }
