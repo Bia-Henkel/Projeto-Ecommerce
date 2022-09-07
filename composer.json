@@ -1,0 +1,17 @@
+{
+    "name": "bia/php-store",
+    "description": "Loja Online em PHP",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "core\\": "core/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Beatriz da Silva",
+            "email": "biadsjh@gmail.com"
+        }
+    ],
+    "require": {}
+}
